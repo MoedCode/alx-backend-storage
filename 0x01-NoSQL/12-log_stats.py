@@ -1,40 +1,37 @@
 #!/usr/bin/env python3
-"""
-Provide some stats about Nginx logs stored in MongoDB
-Database: logs, Collection: nginx, Display same as example
-first line: x logs, x number of documents in this collection
-second line: Methods
-5 lines with method = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-one line with method=GET, path=/status
-"""
+"""script that provides some stats about Nginx logs stored in MongoDB:"""
+
+
 from pymongo import MongoClient
 
 
-METHODS = ["GET", "POST", "PUT", "PATCH", "DELETE"]
-
-
-def log_stats(mongo_collection, option=None):
+def log_stats(logs_collection):
     """
-    Prototype: def log_stats(mongo_collection, option=None):
-    Provide some stats about Nginx logs stored in MongoDB
+    Provides some stats about Nginx logs stored in MongoDB.
+
+    Args:
+        logs_collection: A pymongo collection object.
+
     """
-    items = {}
-    if option:
-        value = mongo_collection.count_documents(
-            {"method": {"$regex": option}})
-        print(f"\tmethod {option}: {value}")
-        return
-
-    result = mongo_collection.count_documents(items)
-    print(f"{result} logs")
-    print("Methods:")
-    for method in METHODS:
-        log_stats(nginx_collection, method)
-    status_check = mongo_collection.count_documents({"path": "/status"})
-    print(f"{status_check} status check")
-
+    total = logs_collection.count_documents({})
+    get = logs_collection.count_documents({"method": "GET"})
+    post = logs_collection.count_documents({"method": "POST"})
+    put = logs_collection.count_documents({"method": "PUT"})
+    patch = logs_collection.count_documents({"method": "PATCH"})
+    delete = logs_collection.count_documents({"method": "DELETE"})
+    head = logs_collection.count_documents({"method": "HEAD"})
+    connect = logs_collection.count_documents({"method": "CONNECT"})
+    options = logs_collection.count_documents({"method": "OPTIONS"})
+    top10 = logs_collection.aggregate([
+        {"$group": {"_id": "$path", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}},
+        {"$limit": 10}
+    ])
+    top10 = [{"path": doc["_id"], "count": doc["count"]} for doc in top10]
+    return (total, get, post, put, patch, delete, head, connect, options, top10)
 
 
 if __name__ == "__main__":
-    nginx_collection = MongoClient('mongodb://127.0.0.1:27017').logs.nginx
-    log_stats(nginx_collection)
+    client = MongoClient('mongodb://127.0.0.1:27017')
+    mongo_collection = client.logs.nginx
+    print(f"{log_stats(mongo_collection)} logs")
