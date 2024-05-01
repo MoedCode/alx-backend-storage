@@ -31,6 +31,7 @@ def log_stats(logs_collection):
     return (total, get, post, put, patch, delete, head, connect, options, top10)
 
 
+
 if __name__ == "__main__":
     client = MongoClient('mongodb://127.0.0.1:27017')
     mongo_collection = client.logs.nginx
