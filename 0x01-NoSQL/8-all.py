@@ -1,6 +1,6 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 """
-function that list all document
+This module have a utility function that list all document
 """
 import pymongo
 
