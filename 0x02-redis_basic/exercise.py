@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+"""cach module"""
 import redis
 import uuid
 from typing import Union
