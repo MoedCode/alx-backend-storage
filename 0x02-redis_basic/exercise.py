@@ -6,10 +6,7 @@ from typing import Union
 
 
 class Cache:
-    """
-    Initializes a Cache object with a Redis client instance.
-    shift + 2 arrows
-    """
+    """ Initializes a Cache object with a Redis client instance. shift + 2 arrows"""
 
     def __init__(self):
         self._redis = redis.Redis()
