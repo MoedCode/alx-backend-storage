@@ -3,8 +3,6 @@ import redis
 import uuid
 from typing import Union
 
-""" Cash module"""
-
 
 class Cache:
     """
